@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:15
+    container_name: db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - private-net
+
+  odoo:
+    image: odoo:17
+    container_name: odoo
+    restart: unless-stopped
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      HOST: ${ODOO_DB_HOST}
+      PORT: ${ODOO_DB_PORT}
+      USER: ${ODOO_DB_USER}
+      PASSWORD: ${ODOO_DB_PASSWORD}
+    ports:
+      - "8069:8069"
+    networks:
+      - private-net
+
+networks:
+  private-net:
+    driver: bridge
